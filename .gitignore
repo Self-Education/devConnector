@@ -1,0 +1,15 @@
+### VisualStudioCode ###
+.vscode/*
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+# User-specific stuff
+.idea/*
+
+.DS_Store
+
+node_modules
+
+### config file
+.env
