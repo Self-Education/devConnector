@@ -11,29 +11,29 @@ const User = require("../../models/User");
 @access     private
 */
 router.post(
-	"/",
-	[auth, body("text", "text content is required").not().isEmpty()],
-	async (req, res) => {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).json(errors.array());
-		}
-		try {
-			const user = await User.findById(req.user.id).select("-password");
-			const post = new Post({
-				text: req.body.text,
-				user: req.user.id,
-				name: user.name,
-				avatar: user.avatar,
-			});
-			post.user = req.user.id;
-			await post.save();
-			return res.json(post);
-		} catch (error) {
-			console.error(error.message);
-			return res.status(500).send("Server Error!");
-		}
-	}
+    "/",
+    [auth, body("text", "text content is required").not().isEmpty()],
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json(errors.array());
+        }
+        try {
+            const user = await User.findById(req.user.id).select("-password");
+            const post = new Post({
+                text: req.body.text,
+                user: req.user.id,
+                name: user.name,
+                avatar: user.avatar,
+            });
+            post.user = req.user.id;
+            await post.save();
+            return res.json(post);
+        } catch (error) {
+            console.error(error.message);
+            return res.status(500).send("Server Error!");
+        }
+    }
 );
 
 /* 
@@ -42,13 +42,13 @@ router.post(
 @access     private
 */
 router.get("/", [auth], async (req, res) => {
-	try {
-		const posts = await Post.find().sort({ date: -1 });
-		return res.json(posts);
-	} catch (error) {
-		console.error(error.message);
-		return res.status(500).send("Server Error!");
-	}
+    try {
+        const posts = await Post.find().sort({ date: -1 });
+        return res.json(posts);
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).send("Server Error!");
+    }
 });
 
 /* 
@@ -57,15 +57,15 @@ router.get("/", [auth], async (req, res) => {
 @access     private
 */
 router.get("/:post_id", [auth, checkObjectId("post_id")], async (req, res) => {
-	try {
-		const post = await Post.findById(req.params.post_id);
-		if (!post) return res.status(404).json({ msg: "post not found" });
+    try {
+        const post = await Post.findById(req.params.post_id);
+        if (!post) return res.status(404).json({ msg: "post not found" });
 
-		return res.json(post);
-	} catch (error) {
-		console.error(error.message);
-		return res.status(500).send("Server Error!");
-	}
+        return res.json(post);
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).send("Server Error!");
+    }
 });
 
 /* 
@@ -74,25 +74,25 @@ router.get("/:post_id", [auth, checkObjectId("post_id")], async (req, res) => {
 @access     private
 */
 router.delete(
-	"/:post_id",
-	[auth, checkObjectId("post_id")],
-	async (req, res) => {
-		try {
-			const post = await Post.findById(req.params.post_id);
-			if (!post) return res.status(404).json({ msg: "post not found" });
+    "/:post_id",
+    [auth, checkObjectId("post_id")],
+    async (req, res) => {
+        try {
+            const post = await Post.findById(req.params.post_id);
+            if (!post) return res.status(404).json({ msg: "post not found" });
 
-			// check if the user is the owner of the post
-			if (post.user.toString() !== req.user.id)
-				return res
-					.status(404)
-					.json({ msg: "user is not authorized to do that" });
-			await post.deleteOne();
-			return res.json({ msg: "post deleted" });
-		} catch (error) {
-			console.error(error.message);
-			return res.status(500).send("Server Error!");
-		}
-	}
+            // check if the user is the owner of the post
+            if (post.user.toString() !== req.user.id)
+                return res
+                    .status(404)
+                    .json({ msg: "user is not authorized to do that" });
+            await post.deleteOne();
+            return res.json({ msg: "post deleted" });
+        } catch (error) {
+            console.error(error.message);
+            return res.status(500).send("Server Error!");
+        }
+    }
 );
 
 /* 
@@ -101,26 +101,26 @@ router.delete(
 @access     private
 */
 router.put(
-	"/like/:post_id",
-	[auth, checkObjectId("post_id")],
-	async (req, res) => {
-		try {
-			const post = await Post.findById(req.params.post_id);
-			if (
-				post.likes.filter(
-					(like) => like.user.toString() === req.user.id
-				).length > 0
-			) {
-				return res.status(400).json({ msg: "the post alreay liked" });
-			}
-			post.likes.unshift({ user: req.user.id });
-			await post.save();
-			return res.json(post.likes);
-		} catch (error) {
-			console.error(error.message);
-			return res.status(500).send("Server Error!");
-		}
-	}
+    "/like/:post_id",
+    [auth, checkObjectId("post_id")],
+    async (req, res) => {
+        try {
+            const post = await Post.findById(req.params.post_id);
+            if (
+                post.likes.filter(
+                    (like) => like.user.toString() === req.user.id
+                ).length > 0
+            ) {
+                return res.status(400).json({ msg: "the post alreay liked" });
+            }
+            post.likes.unshift({ user: req.user.id });
+            await post.save();
+            return res.json(post.likes);
+        } catch (error) {
+            console.error(error.message);
+            return res.status(500).send("Server Error!");
+        }
+    }
 );
 
 /* 
@@ -129,34 +129,101 @@ router.put(
 @access     private
 */
 router.put(
-	"/unlike/:post_id",
-	[auth, checkObjectId("post_id")],
-	async (req, res) => {
-		try {
-			const post = await Post.findById(req.params.post_id);
-			if (
-				post.likes.filter(
-					(like) => like.user.toString() === req.user.id
-				).length === 0
-			) {
-				return res
-					.status(400)
-					.json({ msg: "you did not like this post" });
-			}
-			const index = post.likes.findIndex(
-				(like) => like.user.toString() === req.user.id
-			);
-			console.log(post.likes);
-			console.log(req.user.id);
-			console.log(index);
-			post.likes.splice(index, 1);
-			await post.save();
-			return res.json(post.likes);
-		} catch (error) {
-			console.error(error.message);
-			return res.status(500).send("Server Error!");
-		}
-	}
+    "/unlike/:post_id",
+    [auth, checkObjectId("post_id")],
+    async (req, res) => {
+        try {
+            const post = await Post.findById(req.params.post_id);
+            if (
+                post.likes.filter(
+                    (like) => like.user.toString() === req.user.id
+                ).length === 0
+            ) {
+                return res
+                    .status(400)
+                    .json({ msg: "you did not like this post" });
+            }
+            const index = post.likes.findIndex(
+                (like) => like.user.toString() === req.user.id
+            );
+            console.log(post.likes);
+            console.log(req.user.id);
+            console.log(index);
+            post.likes.splice(index, 1);
+            await post.save();
+            return res.json(post.likes);
+        } catch (error) {
+            console.error(error.message);
+            return res.status(500).send("Server Error!");
+        }
+    }
 );
 
+/* 
+@route      POST api/posts/comment/:post_id
+@desc       add a comment
+@access     private
+*/
+router.post(
+    "/comment/:post_id",
+    [auth, checkObjectId("post_id")],
+    async (req, res) => {
+        try {
+            const user = await User.findById(req.user.id).select("-password");
+            const post = await Post.findById(req.params.post_id);
+            if (!post)
+                return res
+                    .status(400)
+                    .json({ msg: "this post no longer exists!" });
+            const comment = {
+                text: req.body.text,
+                user: req.user.id,
+                name: user.name,
+                avatar: user.avatar,
+            };
+            post.comments.unshift(comment);
+            await post.save();
+            return res.json(post);
+        } catch (error) {
+            console.error(error.message);
+            return res.status(500).send("Server Error!");
+        }
+    }
+);
+
+/* 
+@route      DELETE api/posts/comment/:post_id/:comment_id
+@desc       DELETE a comment by id
+@access     private
+*/
+router.delete(
+    "/comment/:post_id/:comment_id",
+    [auth, checkObjectId("comment_id"), checkObjectId("post_id")],
+    async (req, res) => {
+        try {
+            const post = await Post.findById(req.params.post_id);
+            if (!post) return res.status(404).json({ msg: "post not found" });
+
+            const index = post.comments.findIndex(
+                (comment) => comment._id.toString() === req.params.comment_id
+            );
+
+            if (index === -1)
+                return res.status(404).json({ msg: "comment does not exist!" });
+
+            // check if the user is the owner of the comment
+            if (post.comments[index].user.toString() !== req.user.id) {
+                return res
+                    .status(401)
+                    .json({ msg: "you are not authorized to do that" });
+            }
+            post.comments.splice(index, 1);
+            await post.save();
+            return res.json({ msg: "comment deleted" });
+        } catch (error) {
+            console.error(error.message);
+            return res.status(500).send("Server Error!");
+        }
+    }
+);
 module.exports = router;
