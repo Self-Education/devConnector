@@ -12,59 +12,59 @@ const jwt = require("jsonwebtoken");
 @access     public
 */
 router.post(
-	"/",
-	[
-		body("name", "name is requried").not().isEmpty(),
-		body("email", "email is required").isEmail(),
-		body("password", "password has to be at least 3 chararcters").isLength({
-			min: 3,
-		}),
-	],
-	async (req, res) => {
-		const errors = validationResult(req);
+    "/",
+    [
+        body("name", "name is requried").not().isEmpty(),
+        body("email", "email is required").isEmail(),
+        body("password", "password has to be at least 3 chararcters").isLength({
+            min: 3,
+        }),
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
 
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-		const { name, email, password } = req.body;
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const { name, email, password } = req.body;
 
-		try {
-			const user = await User.findOne({ email: email });
-			if (user) {
-				return res
-					.status(400)
-					.json({ errors: [{ msg: "user already exists!" }] });
-			}
+        try {
+            const user = await User.findOne({ email: email });
+            if (user) {
+                return res
+                    .status(400)
+                    .json({ errors: [{ msg: "user already exists!" }] });
+            }
 
-			const newUser = new User(req.body);
+            const newUser = new User(req.body);
 
-			// hash password
-			const salt = await bcrypt.genSalt(10);
-			newUser.password = await bcrypt.hash(password, salt);
+            // hash password
+            const salt = await bcrypt.genSalt(10);
+            newUser.password = await bcrypt.hash(password, salt);
 
-			// gravatar
-			newUser.avatar = gravatar.url(email, {
-				s: "200",
-				r: "pg",
-				d: "mm",
-			});
-			await newUser.save();
+            // gravatar
+            newUser.avatar = gravatar.url(email, {
+                s: "200",
+                r: "pg",
+                d: "mm",
+            });
+            await newUser.save();
 
-			// json web token
-			const payload = {
-				user: {
-					id: newUser.id,
-				},
-			};
-			const token = jwt.sign(payload, process.env.JWTSECRET, {
-				expiresIn: "120h",
-			});
-			res.json({ token: token });
-		} catch (error) {
-			console.error(error.message);
-			res.status(500).send("Server Error!");
-		}
-	}
+            // json web token
+            const payload = {
+                user: {
+                    id: newUser.id,
+                },
+            };
+            const token = jwt.sign(payload, process.env.JWTSECRET, {
+                expiresIn: "120h",
+            });
+            res.json({ token: token });
+        } catch (error) {
+            console.error(error.message);
+            res.status(500).send("Server Error!");
+        }
+    }
 );
 
 module.exports = router;

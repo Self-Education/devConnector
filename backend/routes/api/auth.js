@@ -15,7 +15,6 @@ const User = require("../../models/User");
 router.get("/", auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select("-password");
-        console.log(user);
         res.json(user);
     } catch (error) {
         console.error(error);
@@ -24,7 +23,7 @@ router.get("/", auth, async (req, res) => {
 });
 
 /* 
-@route      Post api/users
+@route      Post api/auth/login
 @desc       login a user
 @access     public
 */
@@ -37,6 +36,7 @@ router.post(
         }),
     ],
     async (req, res) => {
+        // console.log("i am inside api login");
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -48,12 +48,12 @@ router.post(
             if (!user)
                 return res
                     .status(400)
-                    .json({ error: [{ message: "user does not exist!" }] });
+                    .json({ errors: [{ message: "user does not exist!" }] });
 
             if (!(await bcrypt.compare(password, user.password))) {
                 return res
                     .status(400)
-                    .json({ error: [{ message: "Wrong password!" }] });
+                    .json({ errors: [{ message: "Wrong password!" }] });
             }
             const payload = {
                 user: {
