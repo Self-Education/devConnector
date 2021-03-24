@@ -1,21 +1,52 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { createProfile, getCurrentProfile } from "../../actions/profile";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import useDeepCompare from "../../utils/useDeepCompare";
 import isEqual from "lodash/isEqual";
-const ProfileForm = ({ profile, createProfile, getCurrentProfile }) => {
-	console.log("rendering");
-	const previousProfile = useDeepCompare(profile, {});
+const ProfileForm = ({
+	profile,
+	createProfile,
+	getCurrentProfile,
+	history,
+}) => {
+	const initialState = {
+		company: "",
+		website: "",
+		location: "",
+		status: "",
+		skills: "",
+		githubusername: "",
+		bio: "",
+		twitter: "",
+		facebook: "",
+		linkedin: "",
+		youtube: "",
+		instagram: "",
+	};
+
 	useEffect(() => {
 		if (!profile) getCurrentProfile();
-		if (profile && !isEqual(previousProfile, profile)) {
-			setFormData(profile);
+		const preload = { ...initialState };
+		if (profile) {
+			for (const key in preload) {
+				if (key in profile) {
+					preload[key] = profile[key];
+				}
+			}
+			for (const key in profile.social) {
+				if (profile.social[key]) preload[key] = profile.social[key];
+			}
+
+			if (Array.isArray(profile.skills)) {
+				preload[skills] = profile.skills.join(",");
+			}
+			setFormData(preload);
 		}
-	});
+	}, [profile]);
 
-	const [formData, setFormData] = useState({});
-
+	const [formData, setFormData] = useState(initialState);
 	const changeHandler = (e) => {
 		setFormData({
 			...formData,
@@ -44,6 +75,7 @@ const ProfileForm = ({ profile, createProfile, getCurrentProfile }) => {
 		youtube,
 		instagram,
 	} = formData;
+
 	return (
 		<div>
 			<h1 className="large text-primary">Create Your Profile</h1>
@@ -225,9 +257,12 @@ const ProfileForm = ({ profile, createProfile, getCurrentProfile }) => {
 				)}
 
 				<input type="submit" className="btn btn-primary my-1" />
-				<a className="btn btn-light my-1" href="dashboard.html">
+				<button
+					className="btn btn-light my-1"
+					onClick={() => history.goBack()}
+				>
 					Go Back
-				</a>
+				</button>
 			</form>
 		</div>
 	);

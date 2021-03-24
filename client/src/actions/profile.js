@@ -24,7 +24,7 @@ const getCurrentProfile = () => async (dispatch) => {
 };
 
 const createProfile = (formData) => async (dispatch) => {
-	console.log("inside createProfile");
+	console.log("inside action-createProfile");
 	console.log(formData);
 	try {
 		const res = await apiConnector.post(

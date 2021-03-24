@@ -36,14 +36,19 @@ function App() {
 			<Router>
 				<Navbar />
 				<Route exact path="/" component={Landing} />
-				<Alert />
+
 				<section className="container">
+					<Alert />
 					<Switch>
 						<Route path="/login" component={Login} />
 						<Route path="/register" component={Register} />
 						<PrivateRoute path="/dashboard" component={Dashboard} />
 						<PrivateRoute
 							path="/edit-profile"
+							component={ProfileForm}
+						/>
+						<PrivateRoute
+							path="/create-profile"
 							component={ProfileForm}
 						/>
 					</Switch>
