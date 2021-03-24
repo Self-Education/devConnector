@@ -21,36 +21,36 @@ import { loadUser } from "./actions/auth";
 // here store will be called and token is fetched before rest of DOM,
 // in case the child DOM needs authentication to access.
 function App() {
-    // console.log("rendering --- App");
-    useEffect(() => {
-        // console.log("I am inside useEffect --- App");
-        if (localStorage.token) {
-            // console.log("Set Auth Token --- APP");
-            setAuthToken(localStorage.token);
-        }
-        // console.log(" dispatch loadUser --- APP");
-        store.dispatch(loadUser());
-    }, []);
-    return (
-        <Provider store={store}>
-            <Router>
-                <Navbar />
-                <Route exact path="/" component={Landing} />
-                <Alert />
-                <section className="container">
-                    <Switch>
-                        <Route path="/login" component={Login} />
-                        <Route path="/register" component={Register} />
-                        <PrivateRoute path="/dashboard" component={Dashboard} />
-                        <PrivateRoute
-                            path="/create-profile"
-                            component={ProfileForm}
-                        />
-                    </Switch>
-                </section>
-            </Router>
-        </Provider>
-    );
+	// console.log("rendering --- App");
+	useEffect(() => {
+		// console.log("I am inside useEffect --- App");
+		if (localStorage.token) {
+			// console.log("Set Auth Token --- APP");
+			setAuthToken(localStorage.token);
+		}
+		// console.log(" dispatch loadUser --- APP");
+		store.dispatch(loadUser());
+	}, []);
+	return (
+		<Provider store={store}>
+			<Router>
+				<Navbar />
+				<Route exact path="/" component={Landing} />
+				<Alert />
+				<section className="container">
+					<Switch>
+						<Route path="/login" component={Login} />
+						<Route path="/register" component={Register} />
+						<PrivateRoute path="/dashboard" component={Dashboard} />
+						<PrivateRoute
+							path="/edit-profile"
+							component={ProfileForm}
+						/>
+					</Switch>
+				</section>
+			</Router>
+		</Provider>
+	);
 }
 
 export default App;
