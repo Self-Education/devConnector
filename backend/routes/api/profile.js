@@ -16,7 +16,7 @@ router.get("/me", [auth], async (req, res) => {
 		const myProfile = await Profile.findOne({
 			user: req.user.id,
 		}).populate("user", ["name", "avatar"]);
-		if (myProfile.length <= 0) {
+		if (!myProfile) {
 			return res.status(404).json({
 				msg: "You do not have profile, please go ahead and add it!",
 			});
@@ -234,6 +234,7 @@ router.put(
 	],
 	async (req, res) => {
 		const errors = validationResult(req);
+		console.log("inside api put education");
 		if (!errors.isEmpty()) {
 			return res.status(400).json(errors.array());
 		}

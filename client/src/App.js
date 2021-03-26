@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 //import style sheet
 import "./App.css";
@@ -11,6 +11,8 @@ import Alert from "./components/Alert";
 import Dashboard from "./components/dashboard/Dashboard";
 import PrivateRoute from "./components/routing/PrivateRoute";
 import ProfileForm from "./components/ProfileForm/ProfileForm";
+import EducationForm from "./components/ProfileForm/EducationFrom";
+import ExperienceForm from "./components/ProfileForm/ExperienceForm";
 // import redux related
 import { Provider } from "react-redux";
 import store from "./store";
@@ -45,11 +47,20 @@ function App() {
 						<PrivateRoute path="/dashboard" component={Dashboard} />
 						<PrivateRoute
 							path="/edit-profile"
+							edit=""
 							component={ProfileForm}
 						/>
 						<PrivateRoute
 							path="/create-profile"
 							component={ProfileForm}
+						/>
+						<PrivateRoute
+							path="/add-education"
+							component={EducationForm}
+						/>
+						<PrivateRoute
+							path="/add-experience"
+							component={ExperienceForm}
 						/>
 					</Switch>
 				</section>

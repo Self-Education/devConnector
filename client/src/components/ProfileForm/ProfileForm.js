@@ -1,12 +1,10 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { createProfile, getCurrentProfile } from "../../actions/profile";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import useDeepCompare from "../../utils/useDeepCompare";
-import isEqual from "lodash/isEqual";
+
 const ProfileForm = ({
-	profile,
+	profile: { profile, loading },
 	createProfile,
 	getCurrentProfile,
 	history,
@@ -27,9 +25,10 @@ const ProfileForm = ({
 	};
 
 	useEffect(() => {
+		console.log("profile from useEffect");
 		if (!profile) getCurrentProfile();
 		const preload = { ...initialState };
-		if (profile) {
+		if (!loading && profile) {
 			for (const key in preload) {
 				if (key in profile) {
 					preload[key] = profile[key];
@@ -44,7 +43,7 @@ const ProfileForm = ({
 			}
 			setFormData(preload);
 		}
-	}, [profile]);
+	}, [profile, getCurrentProfile]);
 
 	const [formData, setFormData] = useState(initialState);
 	const changeHandler = (e) => {
@@ -58,7 +57,7 @@ const ProfileForm = ({
 
 	const onSubmit = (e) => {
 		e.preventDefault();
-		createProfile(formData);
+		createProfile(formData, history, profile ? true : false);
 	};
 
 	const {
@@ -274,7 +273,7 @@ ProfileForm.propTypes = {
 	getCurrentProfile: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state) => ({
-	profile: state.profile.profile,
+	profile: state.profile,
 });
 export default connect(mapStateToProps, { createProfile, getCurrentProfile })(
 	ProfileForm

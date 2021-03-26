@@ -1,7 +1,14 @@
 import apiConnector from "../utils/apiConnector";
-import { CREATE_PROFILE, GET_PROFILE, PROFILE_ERROR } from "../costants";
+import {
+	CREATE_PROFILE,
+	GET_PROFILE,
+	PROFILE_ERROR,
+	EDIT_PROFILE,
+	DELETE_EDUCATIOIN,
+	DELETE_EXPERIENCE,
+} from "../costants";
 import setAlert from "./alert";
-import profile from "../reducers/profile";
+
 const getCurrentProfile = () => async (dispatch) => {
 	console.log("inisde getCurrentProfile");
 	try {
@@ -23,19 +30,21 @@ const getCurrentProfile = () => async (dispatch) => {
 	}
 };
 
-const createProfile = (formData) => async (dispatch) => {
-	console.log("inside action-createProfile");
-	console.log(formData);
+const createProfile = (formData, history, edit) => async (dispatch) => {
 	try {
 		const res = await apiConnector.post(
 			"profile",
 			JSON.stringify(formData)
 		);
+
 		dispatch({
 			type: CREATE_PROFILE,
 			payload: res.data,
 		});
-		dispatch(setAlert("Profile Updated!", "success"));
+		dispatch(
+			setAlert(edit ? "Profile edited" : "Profile Updated!", "success")
+		);
+		history.push("/dashboard");
 	} catch (error) {
 		console.log(error);
 		dispatch({
@@ -44,4 +53,89 @@ const createProfile = (formData) => async (dispatch) => {
 	}
 };
 
-export { getCurrentProfile, createProfile };
+const addExperience = (formData, history) => async (dispatch) => {
+	try {
+		const res = await apiConnector.put(
+			"profile/experience",
+			JSON.stringify(formData)
+		);
+		dispatch({
+			type: EDIT_PROFILE,
+			payload: res.data,
+		});
+		dispatch(setAlert("Experience Added", "success"));
+		history.push("/dashboard");
+	} catch (error) {
+		console.log(error.response.data);
+		const errors = error.response.data;
+		dispatch({
+			type: PROFILE_ERROR,
+		});
+		if (errors) {
+			errors.forEach((error) => dispatch(setAlert(error.msg, "danger")));
+		}
+	}
+};
+
+const addEducation = (formData, history) => async (dispatch) => {
+	try {
+		// console.log("inside action add education");
+
+		const res = await apiConnector.put(
+			"profile/education",
+			JSON.stringify(formData)
+		);
+		dispatch({
+			type: EDIT_PROFILE,
+			payload: res.data,
+		});
+		dispatch(setAlert("Education Updated!", "success"));
+		history.push("/dashboard");
+	} catch (error) {
+		console.log(error);
+		dispatch({
+			type: PROFILE_ERROR,
+		});
+	}
+};
+
+const deleteExperience = (exp_id) => async (dispatch) => {
+	console.log(exp_id);
+	try {
+		const res = await apiConnector.delete(`profile/experience/${exp_id}`);
+		dispatch({
+			type: DELETE_EXPERIENCE,
+		});
+		dispatch(getCurrentProfile());
+	} catch (error) {
+		console.log(error.response.data);
+		dispatch({
+			type: PROFILE_ERROR,
+			payload: error.response.data,
+		});
+	}
+};
+
+const deleteEducation = (edu_id) => async (dispatch) => {
+	try {
+		const res = await apiConnector.delete(`profile/education/${edu_id}`);
+		dispatch({
+			type: DELETE_EDUCATIOIN,
+		});
+		dispatch(getCurrentProfile());
+	} catch (error) {
+		console.log(error.response.data);
+		dispatch({
+			type: PROFILE_ERROR,
+			payload: error.response.data,
+		});
+	}
+};
+export {
+	getCurrentProfile,
+	createProfile,
+	addEducation,
+	addExperience,
+	deleteExperience,
+	deleteEducation,
+};
