@@ -2,7 +2,7 @@ import { SET_ALERT, REMOVE_ALERT } from "../costants";
 import { v4 as uuidv4 } from "uuid";
 
 const setAlert = (msg, alertType) => (dispatch) => {
-    console.log("insdie actions/alert/setAlert");
+    // console.log("insdie actions/alert/setAlert");
     const id = uuidv4();
     dispatch({
         type: SET_ALERT,

@@ -69,7 +69,7 @@ const loadUser = () => async (dispatch) => {
             payload: res.data,
         });
     } catch (error) {
-        console.error(error.response.data.errors);
+        console.error(error.response.data);
         dispatch({
             type: AUTH_FAIL,
         });

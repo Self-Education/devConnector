@@ -18,7 +18,7 @@ const Navbar = ({ auth: { isAuthenticated, loading }, logout }) => {
     const beforeLogin = (
         <ul>
             <li>
-                <Link to="#!">Developers</Link>
+                <Link to="/developers">Developers</Link>
             </li>
             <li>
                 <Link to="/register">Register</Link>

@@ -6,6 +6,7 @@ import {
     LOGIN_SUCCESS,
     LOGIN_FAIL,
     LOG_OUT,
+    DELETE_ACCOUNT,
 } from "../costants";
 
 const initialState = {
@@ -41,6 +42,7 @@ const auth = (state = initialState, action) => {
         case AUTH_FAIL:
         case LOGIN_FAIL:
         case LOG_OUT:
+        case DELETE_ACCOUNT:
             localStorage.removeItem("token");
             return {
                 ...state,
